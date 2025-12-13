@@ -1,0 +1,39 @@
+#include "instance.hpp"
+
+namespace Graphics::Instance {
+
+    Instance::Instance() {
+
+//-------------------------------------ENGINE INFO-------------------------------------------------------
+        VkApplicationInfo engineInfo{};
+        engineInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+        engineInfo.pApplicationName = "Vulkan project";
+        engineInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
+        engineInfo.pEngineName = "UranEngine";
+        engineInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
+        engineInfo.apiVersion = VK_API_VERSION_1_0;
+
+//------------------------------------INSTANCE INFO------------------------------------------------------
+
+        uint32_t glfwExtensionCount = 0;
+        const char** glfwExtensions;
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+        VkInstanceCreateInfo instanceInfo{};
+        instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+        instanceInfo.pApplicationInfo = &engineInfo;
+        instanceInfo.enabledExtensionCount = glfwExtensionCount;
+        instanceInfo.ppEnabledExtensionNames = glfwExtensions;
+        instanceInfo.enabledLayerCount = 0;
+
+
+//------------------------------------CREATING INSTANCE--------------------------------------------------
+        if (vkCreateInstance(&instanceInfo, nullptr, &vk_instance) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create instance!");
+        }
+    }
+
+    Instance::~Instance() {
+        vkDestroyInstance(vk_instance, nullptr);
+    }
+}
