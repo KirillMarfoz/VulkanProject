@@ -3,8 +3,12 @@
 namespace Graphics::Instance {
 
     Instance::Instance() {
+//------------------------------VALIDATION LAYERS CHECK------------------------------
+        if (enableValidationLayers && !checkValidationLayerSupport()) {
+        throw std::runtime_error("validation layers requested, but not available!");
+    }
 
-//-------------------------------------ENGINE INFO-------------------------------------------------------
+//------------------------------ENGINE INFO------------------------------
         VkApplicationInfo engineInfo{};
         engineInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         engineInfo.pApplicationName = "Vulkan project";
@@ -13,7 +17,7 @@ namespace Graphics::Instance {
         engineInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
         engineInfo.apiVersion = VK_API_VERSION_1_0;
 
-//------------------------------------INSTANCE INFO------------------------------------------------------
+//------------------------------INSTANCE INFO------------------------------
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions;
@@ -27,11 +31,37 @@ namespace Graphics::Instance {
         instanceInfo.enabledLayerCount = 0;
 
 
-//------------------------------------CREATING INSTANCE--------------------------------------------------
+//------------------------------CREATING INSTANCE------------------------------
         if (vkCreateInstance(&instanceInfo, nullptr, &vk_instance) != VK_SUCCESS) {
             throw std::runtime_error("failed to create instance!");
         }
     }
+
+//------------------------------CHECK VALIDATION LAYERS SUPPORT------------------------------
+
+    bool Instance::checkValidationLayerSupport() {
+        uint32_t  layerCount;
+        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+        std::vector<VkLayerProperties> availableLayers(layerCount);
+        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+        for (const char* layerName : validationLayers) {
+            bool layerFound = false;
+
+            for (const auto& layerProperties : availableLayers) {
+                if (strcmp(layerName, layerProperties.layerName) == 0) {
+                    layerFound = true;
+                    break;
+                }
+            }
+            if (!layerFound) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+//------------------------------DESTROYING INSTANCE------------------------------
 
     Instance::~Instance() {
         vkDestroyInstance(vk_instance, nullptr);
