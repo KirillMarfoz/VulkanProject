@@ -2,7 +2,7 @@
 
 namespace Graphics::Device {
 
-    Device::Device::Device(VkInstance instance, const bool enableValidationLayers, const std::vector<const char*> validationLayers) {
+    Device::Device(VkInstance instance, const bool enableValidationLayers, const std::vector<const char*> validationLayers) {
 
 //------------------------------CREATING PHYSICAL DEVICE------------------------------
 
