@@ -3,34 +3,68 @@
 #include "../includes/graphics.hpp"
 #include <stdexcept>
 #include <optional>
+#include <set>
+#include <algorithm>
 #include <vector>
 
-namespace Graphics::Device {
+namespace Graphics {
+
+    struct SwapChainSupportDetails {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkPresentModeKHR> present;
+        std::vector<VkSurfaceFormatKHR> format;
+    };
 
     struct QueueFamilyIndices
     {
         std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
 
-        bool is_complete() {
-            return graphicsFamily.has_value();
+        inline bool isComplete() {
+            return graphicsFamily.has_value() & presentFamily.has_value();
         }
     };
     
 
     class Device {
     public:
-        Device(VkInstance instance, const bool enableValidationLayers, const std::vector<const char*> validationLayers);
+        Device(
+        VkInstance instance,
+        VkSurfaceKHR surface,
+        bool enableValidationLayers,
+        const std::vector<const char*>& validationLayers
+        );
+        void createSwapChain(GLFWwindow* window, VkSurfaceKHR surface);
+        void createImageViews();
+        inline void destroySwapChain(VkDevice device) { 
+            for (auto imageView : vk_swapChainImageViews) {
+            vkDestroyImageView(device, imageView, nullptr);
+        } }
+        inline void destroySwapChain(VkDevice device) { vkDestroySwapchainKHR(device, vk_swapChain, nullptr); }
         ~Device();
 
     private:
         VkPhysicalDevice vk_physicalDevice = VK_NULL_HANDLE;
-        VkDevice vk_logicalDevice = VK_NULL_HANDLE;
         VkPhysicalDeviceFeatures deviceFeatures{};
+        std::vector<VkImage> vk_swapChainImages;
+        VkDevice vk_logicalDevice = VK_NULL_HANDLE;
         VkQueue vk_graphicsQueue;
-
-        void pickPhysicalDevice(VkInstance instance);
-        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-        inline bool isDeviceSuitable(VkPhysicalDevice device) { return findQueueFamilies(device).is_complete(); }
+        VkQueue vk_presentQueue;
+        VkSwapchainKHR vk_swapChain;
+        VkFormat vk_swapChainImageFormat;
+        std::vector<VkImageView> vk_swapChainImageViews;
+        VkExtent2D vk_swapChainExtent;
+        const std::vector<const char*> deviceExtensions = {
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME
+        };
+        
+        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
+        SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
+        VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, GLFWwindow* window);
+        bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+        bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface);
     };
 
 }

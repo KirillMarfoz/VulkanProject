@@ -1,13 +1,11 @@
-#define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
 
 #include "../graphics/instance.hpp"
+#include "../graphics/device.hpp"
 
 //------------------------------LOAD JSON------------------------------
 nlohmann::json loadJson() {
@@ -49,7 +47,11 @@ int main() {
             throw std::runtime_error("Failed to create GLFW window");
 
         {
-            Graphics::Instance::Instance instance;
+            Graphics::Instance instance;
+            instance.createSurface(window);
+            Graphics::Device device(instance.getInstance(), instance.getSurface(), instance.getEnableValidationLayers(), instance.getValidationLayers());
+            device.createSwapChain(window, instance.getSurface());
+            device.createImageViews();
 
             while (!glfwWindowShouldClose(window)) {
                 glfwPollEvents();

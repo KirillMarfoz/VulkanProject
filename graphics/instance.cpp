@@ -1,6 +1,6 @@
 #include "instance.hpp"
 
-namespace Graphics::Instance {
+namespace Graphics {
 
     Instance::Instance() {
 //------------------------------VALIDATION LAYERS CHECK------------------------------
@@ -31,10 +31,14 @@ namespace Graphics::Instance {
         instanceInfo.enabledLayerCount = 0;
 
 
-//------------------------------CREATING INSTANCE------------------------------
-        if (vkCreateInstance(&instanceInfo, nullptr, &vk_instance) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create instance!");
-        }
+//------------------------------CREATE INSTANCE------------------------------
+        if (vkCreateInstance(&instanceInfo, nullptr, &vk_instance) != VK_SUCCESS) throw std::runtime_error("failed to create instance!");
+    }
+
+//------------------------------CREATE SURFACE------------------------------
+
+    void Instance::createSurface(GLFWwindow* window) {
+        if (glfwCreateWindowSurface(vk_instance, window, nullptr, &vk_surface) != VK_SUCCESS) throw std::runtime_error("failde to create surface!");
     }
 
 //------------------------------CHECK VALIDATION LAYERS SUPPORT------------------------------
@@ -61,9 +65,10 @@ namespace Graphics::Instance {
         return true;
     }
 
-//------------------------------DESTROYING INSTANCE------------------------------
+//------------------------------DESTROY INSTANCE------------------------------
 
     Instance::~Instance() {
-        vkDestroyInstance(vk_instance, nullptr);
+        if (vk_surface != VK_NULL_HANDLE) vkDestroySurfaceKHR(vk_instance, vk_surface, nullptr);
+        if (vk_instance != VK_NULL_HANDLE) vkDestroyInstance(vk_instance, nullptr);
     }
 }
