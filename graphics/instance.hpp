@@ -14,10 +14,10 @@ namespace Graphics {
             void createSurface(GLFWwindow* window);
             ~Instance();
 
-            inline VkInstance getInstance() { return vk_instance; }
-            inline VkSurfaceKHR getSurface() { return vk_surface; }
-            inline bool getEnableValidationLayers() { return enableValidationLayers; }
-            inline const std::vector<const char*> getValidationLayers() { return validationLayers; }
+            inline VkInstance getInstance() const { return vk_instance; }
+            inline VkSurfaceKHR getSurface() const { return vk_surface; }
+            inline bool getEnableValidationLayers() const { return enableValidationLayers; }
+            inline const std::vector<const char*> getValidationLayers() const { return validationLayers; }
 
         private:
             #ifdef NDEBUG

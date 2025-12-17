@@ -36,7 +36,7 @@ namespace Graphics {
 
             VkDeviceQueueCreateInfo queueInfo{};
             queueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueInfo.queueFamilyIndex = indices.graphicsFamily.value();
+            queueInfo.queueFamilyIndex = queueFamily;
             queueInfo.queueCount = 1;
             queueInfo.pQueuePriorities = &queuePriority;
             queueInfos.push_back(queueInfo);
@@ -62,6 +62,7 @@ namespace Graphics {
 
         if(vkCreateDevice(vk_physicalDevice, &deviceInfo, nullptr, &vk_logicalDevice) != VK_SUCCESS) throw std::runtime_error("failed to create device!");
 
+        vkGetDeviceQueue(vk_logicalDevice, indices.graphicsFamily.value(), 0, &vk_graphicsQueue);
         vkGetDeviceQueue(vk_logicalDevice, indices.presentFamily.value(), 0, &vk_presentQueue);
     }
 
@@ -79,7 +80,7 @@ namespace Graphics {
         int i = 0;
         for (const auto& queueFamily : queueFamilies) {
 
-            vkGetPhysicalDeviceSurfaceSupportKHR(vk_physicalDevice, i, surface, &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 
             if(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)  indices.graphicsFamily = i;
             if (presentSupport) indices.presentFamily = i;
@@ -180,7 +181,7 @@ namespace Graphics {
         }
 
         uint32_t presentModeCount;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.present.data());
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
         
         if (presentModeCount) {
             details.present.resize(presentModeCount);
@@ -212,7 +213,7 @@ namespace Graphics {
         bool swapChainAdequate;
         if (extensionsSupported) {
             SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device, surface);
-            swapChainAdequate = !swapChainSupport.format.empty() & !swapChainSupport.present.empty();
+            swapChainAdequate = !swapChainSupport.format.empty() && !swapChainSupport.present.empty();
         }
 
         return findQueueFamilies(device, surface).isComplete() && extensionsSupported && swapChainAdequate;

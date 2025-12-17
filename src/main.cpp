@@ -26,14 +26,16 @@ GLFWwindow* initGLFW(const nlohmann::json& w) {
         throw std::runtime_error("Failed to initialize GLFW");
     }
 
+    const auto& json = w.at("window");
+
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     return glfwCreateWindow(
-        w.value("width", 80),
-        w.value("height", 60),
-        w.value("title", "Vulkan App").c_str(),
-        w.value("fullscreen", false) ? glfwGetPrimaryMonitor() : nullptr,
+        json.at("width").get<int>(),
+        json.at("height").get<int>(),
+        json.at("title").get<std::string>().c_str(),
+        json.at("fullscreen").get<bool>() ? glfwGetPrimaryMonitor() : nullptr,
         nullptr
     );
 }
