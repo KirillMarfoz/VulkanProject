@@ -36,11 +36,6 @@ namespace Graphics {
         );
         void createSwapChain(GLFWwindow* window, VkSurfaceKHR surface);
         void createImageViews();
-        inline void destroySwapChain(VkDevice device) { 
-            for (auto imageView : vk_swapChainImageViews) {
-            vkDestroyImageView(device, imageView, nullptr);
-        } }
-        inline void destroySwapChain(VkDevice device) { vkDestroySwapchainKHR(device, vk_swapChain, nullptr); }
         ~Device();
 
     private:

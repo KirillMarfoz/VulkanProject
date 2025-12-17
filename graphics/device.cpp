@@ -260,6 +260,10 @@ namespace Graphics {
     }
 
     Device::~Device() {
-        vkDestroyDevice(vk_logicalDevice, nullptr);
+        for (auto imageView : vk_swapChainImageViews) {
+            vkDestroyImageView(vk_logicalDevice, imageView, nullptr);
+        }
+        if (vk_swapChain != VK_NULL_HANDLE) vkDestroySwapchainKHR(vk_logicalDevice, vk_swapChain, nullptr); 
+        if (vk_logicalDevice != VK_NULL_HANDLE) vkDestroyDevice(vk_logicalDevice, nullptr);
     }
 }
