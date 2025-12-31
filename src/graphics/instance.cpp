@@ -23,9 +23,7 @@ namespace Graphics {
 
         std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-        if (enableValidationLayers) {
-            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-        }
+        if (enableValidationLayers) extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
         VkInstanceCreateInfo instanceInfo{};
         instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
