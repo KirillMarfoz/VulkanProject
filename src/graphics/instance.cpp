@@ -4,9 +4,7 @@ namespace Graphics {
 
     Instance::Instance() {
 //------------------------------VALIDATION LAYERS CHECK------------------------------
-        if (enableValidationLayers && !checkValidationLayerSupport()) {
-        throw std::runtime_error("validation layers requested, but not available!");
-    }
+        if (enableValidationLayers && !checkValidationLayerSupport()) throw std::runtime_error("validation layers requested, but not available!");
 
 //------------------------------ENGINE INFO------------------------------
         VkApplicationInfo engineInfo{};
@@ -23,13 +21,21 @@ namespace Graphics {
         const char** glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
+        std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+
+        if (enableValidationLayers) {
+            extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        }
+
         VkInstanceCreateInfo instanceInfo{};
         instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         instanceInfo.pApplicationInfo = &engineInfo;
         instanceInfo.enabledExtensionCount = glfwExtensionCount;
         instanceInfo.ppEnabledExtensionNames = glfwExtensions;
-        instanceInfo.enabledLayerCount = 0;
-
+        if (enableValidationLayers) {
+            instanceInfo.enabledLayerCount = static_cast<uint32_t>(vk_validationLayers.size());
+            instanceInfo.ppEnabledLayerNames = vk_validationLayers.data();
+        } else instanceInfo.enabledLayerCount = 0;
 
 //------------------------------CREATE INSTANCE------------------------------
         if (vkCreateInstance(&instanceInfo, nullptr, &vk_instance) != VK_SUCCESS) throw std::runtime_error("failed to create instance!");
@@ -49,7 +55,7 @@ namespace Graphics {
         std::vector<VkLayerProperties> availableLayers(layerCount);
         vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-        for (const char* layerName : validationLayers) {
+        for (const char* layerName : vk_validationLayers) {
             bool layerFound = false;
 
             for (const auto& layerProperties : availableLayers) {

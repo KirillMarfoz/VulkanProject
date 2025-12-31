@@ -17,7 +17,7 @@ namespace Graphics {
             inline VkInstance getInstance() const { return vk_instance; }
             inline VkSurfaceKHR getSurface() const { return vk_surface; }
             inline bool getEnableValidationLayers() const { return enableValidationLayers; }
-            inline const std::vector<const char*> getValidationLayers() const { return validationLayers; }
+            inline const std::vector<const char*> getValidationLayers() const { return vk_validationLayers; }
 
         private:
             #ifdef NDEBUG
@@ -28,7 +28,7 @@ namespace Graphics {
 
             VkInstance vk_instance;
             VkSurfaceKHR vk_surface;
-            const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+            const std::vector<const char*> vk_validationLayers = {"VK_LAYER_KHRONOS_validation"};
 
             bool checkValidationLayerSupport();
     };
