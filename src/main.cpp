@@ -4,8 +4,9 @@
 #include <fstream>
 #include <iostream>
 
-#include "../graphics/instance.hpp"
-#include "../graphics/device.hpp"
+#include "graphics/instance.hpp"
+#include "graphics/device.hpp"
+#include "graphics/renderer.hpp"
 
 //------------------------------LOAD JSON------------------------------
 nlohmann::json loadJson() {
@@ -54,6 +55,7 @@ int main() {
             Graphics::Device device(instance.getInstance(), instance.getSurface(), instance.getEnableValidationLayers(), instance.getValidationLayers());
             device.createSwapChain(window, instance.getSurface());
             device.createImageViews();
+            Graphics::Renderer renderer(device.getLogicalDevice(), device.getSwapChainExtent(), device.getSwapChainImageFormat(), device.getSwapChainImageViews());
 
             while (!glfwWindowShouldClose(window)) {
                 glfwPollEvents();

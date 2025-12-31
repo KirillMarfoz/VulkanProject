@@ -35,6 +35,10 @@ namespace Graphics {
         const std::vector<const char*>& validationLayers
         );
         void createSwapChain(GLFWwindow* window, VkSurfaceKHR surface);
+        inline VkFormat getSwapChainImageFormat() { return vk_swapChainImageFormat; }
+        inline VkExtent2D getSwapChainExtent() { return vk_swapChainExtent; }
+        inline std::vector<VkImageView> getSwapChainImageViews() { return vk_swapChainImageViews; }
+        inline VkDevice getLogicalDevice() { return vk_logicalDevice; }
         void createImageViews();
         ~Device();
 

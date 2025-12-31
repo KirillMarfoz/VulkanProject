@@ -42,11 +42,13 @@ FetchContent_MakeAvailable(json)
 # ---------- Executable ----------
 add_executable(VulkanApp
     src/main.cpp
-    graphics/instance.hpp
-    graphics/instance.cpp
-    graphics/device.hpp
-    graphics/device.cpp
-    includes/graphics.hpp
+    src/graphics/instance.hpp
+    src/graphics/instance.cpp
+    src/graphics/renderer.cpp
+    src/graphics/renderer.hpp
+    src/graphics/device.hpp
+    src/graphics/device.cpp
+    src/includes/graphics.hpp
 )
 
 target_link_libraries(VulkanApp
