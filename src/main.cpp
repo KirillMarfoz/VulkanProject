@@ -53,13 +53,17 @@ int main() {
             Graphics::Instance instance;
             instance.createSurface(window);
             Graphics::Device device(instance.getInstance(), instance.getSurface(), instance.getEnableValidationLayers(), instance.getValidationLayers());
+            device.createCommandPool(instance.getSurface());
             device.createSwapChain(window, instance.getSurface());
             device.createImageViews();
-            Graphics::Renderer renderer(device.getLogicalDevice(), device.getSwapChainExtent(), device.getSwapChainImageFormat(), device.getSwapChainImageViews());
+            Graphics::Renderer renderer(device.getLogicalDevice(), device.getSwapChainExtent(), device.getSwapChainImageFormat(), device.getSwapChainImageViews(), device.getCommandPool());
 
             while (!glfwWindowShouldClose(window)) {
                 glfwPollEvents();
+                renderer.drawFrame(device.getSwapChain(), device.getSwapChainExtent(), device.getGraphicsQueue(), device.getPresentQueue());
             }
+
+            vkDeviceWaitIdle(device.getLogicalDevice());
         }
 
         glfwDestroyWindow(window);

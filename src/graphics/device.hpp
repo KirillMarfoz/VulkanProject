@@ -21,7 +21,7 @@ namespace Graphics {
         std::optional<uint32_t> presentFamily;
 
         inline bool isComplete() {
-            return graphicsFamily.has_value() & presentFamily.has_value();
+            return graphicsFamily.has_value() && presentFamily.has_value();
         }
     };
     
@@ -35,11 +35,16 @@ namespace Graphics {
         const std::vector<const char*>& validationLayers
         );
         void createSwapChain(GLFWwindow* window, VkSurfaceKHR surface);
+        inline VkSwapchainKHR getSwapChain() { return vk_swapChain; }
         inline VkFormat getSwapChainImageFormat() { return vk_swapChainImageFormat; }
         inline VkExtent2D getSwapChainExtent() { return vk_swapChainExtent; }
         inline std::vector<VkImageView> getSwapChainImageViews() { return vk_swapChainImageViews; }
         inline VkDevice getLogicalDevice() { return vk_logicalDevice; }
+        inline VkCommandPool getCommandPool() { return vk_commandPool; }
+        inline VkQueue getPresentQueue() { return vk_presentQueue; }
+        inline VkQueue getGraphicsQueue() { return vk_graphicsQueue; }
         void createImageViews();
+        void createCommandPool(VkSurfaceKHR surface);
         ~Device();
 
     private:
@@ -51,6 +56,7 @@ namespace Graphics {
         VkQueue vk_presentQueue;
         VkSwapchainKHR vk_swapChain;
         VkFormat vk_swapChainImageFormat;
+        VkCommandPool vk_commandPool;
         std::vector<VkImageView> vk_swapChainImageViews;
         VkExtent2D vk_swapChainExtent;
         const std::vector<const char*> deviceExtensions = {

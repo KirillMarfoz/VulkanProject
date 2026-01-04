@@ -260,11 +260,25 @@ namespace Graphics {
         }   
     }
 
+//------------------------------ CREATE COMMAND POOL FUNC------------------------------
+    void Device::createCommandPool(VkSurfaceKHR surface) {
+        QueueFamilyIndices queueFamilyIndices = findQueueFamilies(vk_physicalDevice, surface);
+
+        VkCommandPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+        
+        if (vkCreateCommandPool(vk_logicalDevice, &poolInfo, nullptr, &vk_commandPool) != VK_SUCCESS) throw std::runtime_error("failed to create command pool!");
+    }
+
+//------------------------------DESTROY------------------------------
     Device::~Device() {
         for (auto imageView : vk_swapChainImageViews) {
             vkDestroyImageView(vk_logicalDevice, imageView, nullptr);
         }
         if (vk_swapChain != VK_NULL_HANDLE) vkDestroySwapchainKHR(vk_logicalDevice, vk_swapChain, nullptr); 
+        if (vk_commandPool != VK_NULL_HANDLE) vkDestroyCommandPool(vk_logicalDevice, vk_commandPool, nullptr);
         if (vk_logicalDevice != VK_NULL_HANDLE) vkDestroyDevice(vk_logicalDevice, nullptr);
     }
 }
